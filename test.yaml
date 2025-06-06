@@ -5,46 +5,47 @@ trigger:
 
 stages:
 
-# 🔹 Pehla Stage: Build
-- stage: Build
-  displayName: "Build Stage"
-  jobs:
+  # 🔹 Pehla Stage: Build
+  - stage: Build
+    displayName: "Build Stage"
+    jobs:
 
-  - job: BuildApp
-    displayName: "Build the Application"
-    pool:
-      vmImage: 'windows-latest'   # Job chalega Windows machine pe
+    - job: BuildApp
+      displayName: "Build the Application"
+      pool:
+        vmImage: 'windows-latest'   # Job chalega Windows machine pe
 
-    steps:
-    - script: echo "Restoring packages..."
-      displayName: "Restore Packages"
+      steps:
+      - script: echo "Restoring packages..."
+        displayName: "Restore Packages"
 
-    - script: echo "Building application..."
-      displayName: "Build Code"
+      - script: echo "Building application..."
+        displayName: "Build Code"
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
 
-# 🔹 Dusra Stage: Deploy
-- stage: Deploy
-  displayName: "Deployment Stage"
-  dependsOn: Build   # Yeh tabhi chalega jab Build stage successful ho
-  jobs:
+  # 🔹 Dusra Stage: Deploy
+  - stage: Deploy
+    displayName: "Deployment Stage"
+    dependsOn: Build   # Yeh tabhi chalega jab Build stage successful ho
+    jobs:
 
-  - job: DeployJob
-    displayName: "Deploy to Azure Web App"
-    pool:
-      vmImage: 'windows-latest'
+    - job: DeployJob
+      displayName: "Deploy to Azure Web App"
+      pool:
+        vmImage: 'windows-latest'
 
-    steps:
-    - script: echo "Preparing deployment..."
-      displayName: "Prep Step"
+      steps:
+      - script: echo "Preparing deployment..."
+        displayName: "Prep Step"
 
-    - task: AzureWebApp@1
-      inputs:
-        azureSubscription: 'MyAzureConnection'
-        appName: 'MyAppName'
-        package: '$(Pipeline.Workspace)/drop/**/*.zip'
+      - task: AzureWebApp@1
+        inputs:
+          azureSubscription: 'MyAzureConnection'
+          appName: 'MyAppName'
+          package: '$(Pipeline.Workspace)/drop/**/*.zip'
+
